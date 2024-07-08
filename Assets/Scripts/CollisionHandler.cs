@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class CollisionHandler : MonoBehaviour
 {
+    [SerializeField] private float delayTime = 1f;
     void OnCollisionEnter(Collision other)
     {
         switch(other.gameObject.tag)
@@ -14,22 +15,48 @@ public class CollisionHandler : MonoBehaviour
                 Debug.Log("Friendly");
                 break;
             case "Finish":
+                StartSuccessSequence();
                 Debug.Log("Finish");
-                break;
-            case "Fuel":
-                Debug.Log("Fuel");
-                Destroy(other.gameObject);
                 break;
             default:
                 Debug.Log("Default");
-                ReloadLevel();
+                StartCrashSequence();
                 break;
         }
     }
 
+    void StartCrashSequence()
+    {
+        // todo: add SFX upon crash
+        // todo: add particle effect
+        GetComponent<Movement>().enabled = false;
+        //note that the script can be accessed in a method, not just in start!
+        Invoke("ReloadLevel", delayTime);
+    }
+
+    void StartSuccessSequence()
+    {
+        // todo: add SFX upon crash
+        // todo: add particle effect
+        GetComponent<Movement>().enabled = false;
+        Invoke("LoadNextLevel", delayTime);
+    }
+    
     void ReloadLevel()
     {
-        int curentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        SceneManager.LoadScene(curentSceneIndex);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentSceneIndex);
+        
+    }
+
+    void LoadNextLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            nextSceneIndex = 0;
+        }
+        SceneManager.LoadScene(nextSceneIndex);
     }
 }
