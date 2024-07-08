@@ -7,7 +7,10 @@ public class Movement : MonoBehaviour
 {
     private Rigidbody _rb;
     private AudioSource _audioSource;
-
+    
+    //if no accessibility defined when declaring the field, it will be private by default
+    //_audioSource is a private field
+    
     [SerializeField] private float mainThrust = 500f;
     [SerializeField] private float rotationThrust = 100f;
     
