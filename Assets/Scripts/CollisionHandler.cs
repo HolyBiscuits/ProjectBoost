@@ -7,18 +7,36 @@ using UnityEngine.SceneManagement;
 public class CollisionHandler : MonoBehaviour
 {
     [SerializeField] private float delayTime = 1f;
+    [SerializeField] private AudioClip success;
+    [SerializeField] private AudioClip crash;
+
+    private AudioSource _audioSource;
+
+    private bool _isTransitioning = false;
+    void Start()
+    {
+        _audioSource = GetComponent<AudioSource>();
+
+        _isTransitioning = false;
+
+    }
     void OnCollisionEnter(Collision other)
     {
-        switch(other.gameObject.tag)
+        if (_isTransitioning) return;
+        
+        switch (other.gameObject.tag)
         {
             case "Friendly":
                 Debug.Log("Friendly");
                 break;
             case "Finish":
-                StartSuccessSequence();
+                _isTransitioning = true;
                 Debug.Log("Finish");
+                StartSuccessSequence();
+
                 break;
             default:
+                _isTransitioning = true;
                 Debug.Log("Default");
                 StartCrashSequence();
                 break;
@@ -27,7 +45,8 @@ public class CollisionHandler : MonoBehaviour
 
     void StartCrashSequence()
     {
-        // todo: add SFX upon crash
+        _audioSource.Stop();
+        _audioSource.PlayOneShot(crash);
         // todo: add particle effect
         GetComponent<Movement>().enabled = false;
         //note that the script can be accessed in a method, not just in start!
@@ -36,7 +55,8 @@ public class CollisionHandler : MonoBehaviour
 
     void StartSuccessSequence()
     {
-        // todo: add SFX upon crash
+        _audioSource.Stop();
+        _audioSource.PlayOneShot(success);
         // todo: add particle effect
         GetComponent<Movement>().enabled = false;
         Invoke("LoadNextLevel", delayTime);
